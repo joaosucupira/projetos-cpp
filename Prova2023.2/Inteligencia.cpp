@@ -1,10 +1,14 @@
 #include <iostream>
+#include <ctime>
 #include <set>
 #include <list>
 #include <vector>
 using namespace std;
 
+
 class Secreto;
+class Duplo;
+class Espiao;
 
 // Classe abstrata principal
 class Agente {
@@ -21,7 +25,11 @@ class Agente {
             id = cont_id;  
         }
 
-        Agente() { idade = 21; ++cont_id; }
+        Agente() { 
+            idade = 21 + rand() % (59 - 21);            
+            cont_id += 1; 
+            id = cont_id;
+        }
 
         virtual ~Agente() {};
 
@@ -32,40 +40,78 @@ class Agente {
 
 };
 
+// Classe derivada que interage indiretamente com Espião (classe Duplo)
+class Secreto : public Agente {
+    protected:
+        vector<Espiao*> espias;
+        float forca;
+    public:
+    Secreto(const int idd) : Agente(idd) {
+        forca = (100 - idade);
+    }
+    Secreto() : Agente() { forca = (100 - idade); }
+    virtual ~Secreto() {}
+
+    virtual void agir() {
+        vector<Espiao*>::iterator it;
+        for (it = espias.begin(); it != espias.end(); ++it) {
+            // cout << (*it)->getId();
+        }
+        
+    }
+
+    const float getForca() const { return forca; };
+    virtual void incluirEspiao(Espiao* p) {
+        espias.push_back(p);
+    };
+    void operator--() { forca--; }
+
+};
+
+// Classe derivada que interage diretamente com a classe Secreto (agir)
 class Espiao : public Agente {
     private:
     list<Secreto*> secrets;
     bool bocoh;
 
     public:
-        Espiao(const int idd) : Agente(idd) {}
-        Espiao() : Agente() { idade = 21; }
+        Espiao(const int idd) : Agente(idd) {
+            int sorteio = rand() % 101;
+            setBocoh(sorteio < 90);
+        }
+        Espiao() : Agente() { 
+            int sorteio = rand() % 101;
+            setBocoh(sorteio < 90);
+         }
         ~Espiao() {}
 
-        void agir() {};
-        void incluirSecreto(Secreto* p) {};
-        void setBocoh(const bool b) {};
-        const bool getBocoh() const {};
+        void agir() {
+            list<Secreto*>::iterator it;
+            it = secrets.begin();
+            while (it != secrets.end()) {
+                if ((*it)->getForca() > 0) {
+                    --(**it);
+                    ++it;
+                    
+                } else {
+                    secrets.erase(it);
+                }
+
+                cout << "1";
+                
+                // ++it;
+            }
+        }
+
+        void incluirSecreto(Secreto* p) {
+            secrets.push_back(p);
+        };
+        void setBocoh(const bool b) { bocoh = b; };
+        const bool getBocoh() const { return bocoh; };
 
 };
 
-class Secreto : public Agente {
-    protected:
-        vector<Espiao*> espias;
-        float forca;
-    public:
-    Secreto(const int idd) : Agente(idd) {}
-    Secreto() : Agente() {}
-    virtual ~Secreto() {}
-
-    virtual void agir() {}
-    const float getForca() const {};
-    virtual void incluirEspiao() {};
-    void operator--() {};
-
-};
-
-// Classe derivada que interage com Espião (contatar)
+// Classe derivada que interage diretamente com Espião (contatar)
 class Duplo : public Secreto {
     private:
         Espiao* pContato;
@@ -74,14 +120,21 @@ class Duplo : public Secreto {
         Duplo() : Secreto() {}
         ~Duplo() {};
 
-        void incluirEspiao(Espiao* p) {}
+        void incluirEspiao(Espiao* p) {
+            pContato = p;
+            // Secreto::incluirEspiao(p);
+        }
+        void agir() {
+            pContato->setBocoh(false);
+        }
 };
 
-
+// Classe principal
 class Inteligencia
 {
 private:
     set<Agente*> colecao;
+
 public:
     Inteligencia() {
         criarAgentes();
@@ -90,28 +143,60 @@ public:
     ~Inteligencia() {};
 
     void criarAgentes() {
-        colecao.insert(new Espiao(80));
-        colecao.insert(new Duplo(24));
-        colecao.insert(new Secreto(15));
-    };
+
+        // for (int i = 0; i < 2; i++) {
+        //     Secreto* AAA = new Secreto();
+        //     Duplo* BBB = new Duplo();
+        //     Espiao* CCC = new Espiao();
+        //     colecao.insert(AAA);
+        //     colecao.insert(BBB);
+        //     colecao.insert(CCC);
+        // }
+        Secreto* AAA = new Secreto();
+        Espiao* BBB = new Espiao();
+        Duplo* CCC = new Duplo();
+        colecao.insert(AAA);
+        colecao.insert(BBB);
+        colecao.insert(CCC);
+
+        AAA->incluirEspiao(BBB);
+        BBB->incluirSecreto(AAA);
+        CCC->incluirEspiao(BBB);
+
+    }
+
     void executar() {
-        set<Agente*>::iterator iterator;
-        iterator = colecao.begin();
-        while (iterator != colecao.end()) {
-            cout << (*iterator)->getId() 
-                 << " - IDADE = " << (*iterator)->getIdade()
-            << endl;
-            ++iterator;
+        for (int i = 0; i < 3; i++) {
+            mostrar();
         }
 
+    }
+    void mostrar() {
+        cout << "ID    IDADE    CLASSE    ID_INIMIGO" << endl;
+        set<Agente*>::iterator it;
+        it = colecao.begin();
+        while (it != colecao.end()) {
+            Espiao* espiao = dynamic_cast<Espiao*>(*it);
+            Duplo* duplo = dynamic_cast<Duplo*>(*it);
 
-    };
+            cout << (*it)->getId() << " ---- "
+                << (*it)->getIdade() << " ---- "
+                << (espiao ? "ESPIAO" : (duplo ? "DUPLO" : "SECRETO")) << " ---- ";
+
+            (*it)->agir();
+
+            ++(**it);
+            ++it;
+            cout << endl;
+        }
+        cout<<endl;
+    }
 };
 
-int Agente::cont_id = 0;
+int Agente::cont_id = 0; // Inicialização da contagem de Agentes
 
 int main(int argv, char* agrc[]) {
-
-    Inteligencia intel;
+    srand(time(NULL));
+    Inteligencia intel; // Classe principal que executa toda a rede de objetos e ações ao ser inicializada
     return 0;
 }
