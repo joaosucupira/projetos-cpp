@@ -52,17 +52,11 @@ class Secreto : public Agente {
     Secreto() : Agente() { forca = (100 - idade); }
     virtual ~Secreto() {}
 
-    virtual void agir() {
-        vector<Espiao*>::iterator it;
-        for (it = espias.begin(); it != espias.end(); ++it) {
-            // cout << (*it)->getId();
-        }
-        
-    }
+    virtual void agir(); // Mandei a definição para baixo por dependencia de classes
 
     const float getForca() const { return forca; };
     virtual void incluirEspiao(Espiao* p) {
-        espias.push_back(p);
+        espias.push_back(p); // undefined ref
     };
     void operator--() { forca--; }
 
@@ -71,7 +65,7 @@ class Secreto : public Agente {
 // Classe derivada que interage diretamente com a classe Secreto (agir)
 class Espiao : public Agente {
     private:
-    list<Secreto*> secrets;
+        list<Secreto*> secrets;
     bool bocoh;
 
     public:
@@ -85,26 +79,10 @@ class Espiao : public Agente {
          }
         ~Espiao() {}
 
-        void agir() {
-            list<Secreto*>::iterator it;
-            it = secrets.begin();
-            while (it != secrets.end()) {
-                if ((*it)->getForca() > 0) {
-                    --(**it);
-                    ++it;
-                    
-                } else {
-                    secrets.erase(it);
-                }
-
-                cout << "1";
-                
-                // ++it;
-            }
-        }
+        void agir();
 
         void incluirSecreto(Secreto* p) {
-            secrets.push_back(p);
+            secrets.push_back(p); // undefined ref
         };
         void setBocoh(const bool b) { bocoh = b; };
         const bool getBocoh() const { return bocoh; };
@@ -122,12 +100,40 @@ class Duplo : public Secreto {
 
         void incluirEspiao(Espiao* p) {
             pContato = p;
-            // Secreto::incluirEspiao(p);
         }
         void agir() {
             pContato->setBocoh(false);
         }
 };
+
+void Espiao::agir() {
+    list<Secreto*>::iterator it;
+    it = secrets.begin();
+    while (it != secrets.end()) { // undefined  ref
+        if ((*it)->getForca() > 0) {
+            --(**it);
+            ++it;
+            
+        } else {
+            secrets.erase(it);
+            break;
+        }
+    }
+}
+
+void Secreto::agir() {
+    vector<Espiao*>::iterator it = espias.begin();
+    int n =  (espias.size() > forca ? forca : espias.size());
+    int i = 0;
+    while (i < n && it != espias.end()) { // undefined ref
+        if ((*it)->getBocoh()) {
+            espias.erase(it);
+            i++;
+        } else { 
+            ++it;
+        }
+    }
+}
 
 // Classe principal
 class Inteligencia
@@ -172,19 +178,15 @@ public:
 
     }
     void mostrar() {
-        cout << "ID    IDADE    CLASSE    ID_INIMIGO" << endl;
+        cout << "ID    IDADE    CLASSE    COLECAO" << endl;
         set<Agente*>::iterator it;
         it = colecao.begin();
         while (it != colecao.end()) {
             Espiao* espiao = dynamic_cast<Espiao*>(*it);
             Duplo* duplo = dynamic_cast<Duplo*>(*it);
-
-            cout << (*it)->getId() << " ---- "
-                << (*it)->getIdade() << " ---- "
-                << (espiao ? "ESPIAO" : (duplo ? "DUPLO" : "SECRETO")) << " ---- ";
+            Secreto* secreto = dynamic_cast<Secreto*>(*it);
 
             (*it)->agir();
-
             ++(**it);
             ++it;
             cout << endl;
