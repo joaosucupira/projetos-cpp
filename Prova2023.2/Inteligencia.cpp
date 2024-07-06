@@ -3,6 +3,7 @@
 #include <set>
 #include <list>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
@@ -55,9 +56,12 @@ class Secreto : public Agente {
     virtual void agir(); // Mandei a definição para baixo por dependencia de classes
 
     const float getForca() const { return forca; };
+
     virtual void incluirEspiao(Espiao* p) {
-        espias.push_back(p); // undefined ref
+        espias.push_back(p); 
+
     };
+
     void operator--() { forca--; }
 
 };
@@ -82,7 +86,8 @@ class Espiao : public Agente {
         void agir();
 
         void incluirSecreto(Secreto* p) {
-            secrets.push_back(p); // undefined ref
+            secrets.push_back(p); 
+
         };
         void setBocoh(const bool b) { bocoh = b; };
         const bool getBocoh() const { return bocoh; };
@@ -103,19 +108,26 @@ class Duplo : public Secreto {
         }
         void agir() {
             pContato->setBocoh(false);
+            cout <<  "Agente Duplo " << id << " contatou espiao " << pContato->getId() << endl; 
         }
 };
 
 void Espiao::agir() {
     list<Secreto*>::iterator it;
     it = secrets.begin();
-    while (it != secrets.end()) { // undefined  ref
-        if ((*it)->getForca() > 0) {
+    while (it != secrets.end()) {
+        if (*it == nullptr) {
+            it = secrets.erase(it);
+
+        } else if ((*it)->getForca() > 0) {
+            
             --(**it);
             ++it;
             
         } else {
-            secrets.erase(it);
+            cout << "Espiao " << id << " neutralizou agente secreto " << (*it)->getId() << endl;
+            delete *it;
+            it = secrets.erase(it);
             break;
         }
     }
@@ -125,10 +137,16 @@ void Secreto::agir() {
     vector<Espiao*>::iterator it = espias.begin();
     int n =  (espias.size() > forca ? forca : espias.size());
     int i = 0;
-    while (i < n && it != espias.end()) { // undefined ref
-        if ((*it)->getBocoh()) {
-            espias.erase(it);
+    while (i < n && it != espias.end()) { 
+        if (*it == nullptr ) {
+            it = espias.erase(it);
+        
+        } else if ((*it)->getBocoh()) {
+            cout << "Agente secreto " << id << " neutralizou o espiao " << (*it)->getId() << endl;
+            delete *it;
+            it = espias.erase(it);
             i++;
+
         } else { 
             ++it;
         }
@@ -148,50 +166,90 @@ public:
     }
     ~Inteligencia() {};
 
+    // Cria os agentes e define a melhor forma de serem preenchidas as coleçoes de cada objeto
     void criarAgentes() {
+        int n = 4;
+        for(int i = 0; i < n; i ++) {
+            Espiao* EEE = new Espiao();
+            Secreto* SSS = new Secreto();
+            colecao.insert(EEE);
+            colecao.insert(SSS);
+            if (i % 2 == 0) {
+                Duplo* DDD = new Duplo();
+                colecao.insert(DDD);
+                DDD->incluirEspiao(EEE);
+                Espiao* EEE2 = new Espiao();
+            }
 
-        // for (int i = 0; i < 2; i++) {
-        //     Secreto* AAA = new Secreto();
-        //     Duplo* BBB = new Duplo();
-        //     Espiao* CCC = new Espiao();
-        //     colecao.insert(AAA);
-        //     colecao.insert(BBB);
-        //     colecao.insert(CCC);
-        // }
-        Secreto* AAA = new Secreto();
-        Espiao* BBB = new Espiao();
-        Duplo* CCC = new Duplo();
-        colecao.insert(AAA);
-        colecao.insert(BBB);
-        colecao.insert(CCC);
-
-        AAA->incluirEspiao(BBB);
-        BBB->incluirSecreto(AAA);
-        CCC->incluirEspiao(BBB);
-
-    }
-
-    void executar() {
-        for (int i = 0; i < 3; i++) {
-            mostrar();
+            if(i == (n - 1)) { cout << "CONTAGEM DE AGENTES: " << SSS->getId() << endl; }
         }
 
-    }
-    void mostrar() {
-        cout << "ID    IDADE    CLASSE    COLECAO" << endl;
+
+
         set<Agente*>::iterator it;
-        it = colecao.begin();
-        while (it != colecao.end()) {
+        for (it = colecao.begin(); it != colecao.end(); ++it) {
             Espiao* espiao = dynamic_cast<Espiao*>(*it);
-            Duplo* duplo = dynamic_cast<Duplo*>(*it);
             Secreto* secreto = dynamic_cast<Secreto*>(*it);
+            Duplo* duplo = dynamic_cast<Duplo*>(*it);
 
-            (*it)->agir();
-            ++(**it);
-            ++it;
-            cout << endl;
+            if (espiao) {
+                set<Agente*>::iterator it2;
+                for (it2 = colecao.begin(); it2 != colecao.end(); ++it2) {
+                    Secreto* outroSecreto = dynamic_cast<Secreto*>(*it2);
+                    if (outroSecreto && outroSecreto != duplo) {
+                        espiao->incluirSecreto(outroSecreto);
+                    }
+                }
+            } else if (secreto) {
+                set<Agente*>::iterator it2;
+                for (it2 = colecao.begin(); it2 != colecao.end(); ++it2) {
+                    Espiao* outroEspiao = dynamic_cast<Espiao*>(*it2);
+                    if (outroEspiao) {
+                        secreto->incluirEspiao(outroEspiao);
+                    }
+                }
+            }
         }
-        cout<<endl;
+        cout << "! - [Agentes criados e inseridos...]" << endl << endl;
+
+    }
+
+    // Executa os objetos e mostra na tela os eventos ocorrendo e os relacionamentos de objeto ocorrendo. 
+    void executar() {
+        int n = 50;
+        set<Agente*>::iterator iterador;
+
+        for (int i = 0; i < n; i++) {
+            iterador = colecao.begin();
+            while (iterador != colecao.end()) {
+                if (*iterador == nullptr) {
+                    iterador = colecao.erase(iterador);
+                }
+
+                else {
+                    (*iterador)->agir();
+                    ++iterador;
+                }
+            }
+            iterador = colecao.begin();
+            while (iterador != colecao.end()) {
+                if (*iterador == nullptr) {
+                    iterador = colecao.erase(iterador);
+                } else {
+                    ++iterador;
+                }
+            }
+        }
+
+
+        iterador = colecao.begin();
+        while (iterador != colecao.end()) 
+        {
+            delete (*iterador);
+            ++iterador;
+        }
+
+        cout << endl << "! - [Fim da execução...]" << endl;
     }
 };
 
@@ -200,5 +258,6 @@ int Agente::cont_id = 0; // Inicialização da contagem de Agentes
 int main(int argv, char* agrc[]) {
     srand(time(NULL));
     Inteligencia intel; // Classe principal que executa toda a rede de objetos e ações ao ser inicializada
+
     return 0;
 }
