@@ -105,7 +105,10 @@ class Reg_Paciente {
         Endorfina nivel_endo;
         Serotonina nivel_sero;
     public: 
-        Reg_Paciente() {
+        Reg_Paciente() : nivel_endo(), nivel_sero() {
+            nivel_endo.setSero(&nivel_sero);
+            nivel_sero.setEndo(&nivel_endo);
+
             nivel_endo.calcular_nivel();
             nivel_sero.calcular_nivel();
         }
@@ -125,21 +128,44 @@ class Diagnosticador {
         list<Reg_Paciente*> listap;
         ostringstream saida;
     public:
-        Diagnosticador(const int num = 10) {}
-        ~Diagnosticador() {}
+        Diagnosticador(const int num = 10) {
+            for (int i = 0; i < num; i++) {
+                Reg_Paciente* AAA = new Reg_Paciente();
+                AAA->auto_avaliar();
+                listap.push_back(AAA);  
+            }
+        }
+        ~Diagnosticador() {
+            listap.clear();
+            for (list<Reg_Paciente*>::iterator it = listap.begin(); it != listap.end(); ++it) {
+                delete *it;
+            }
+        }
+
+        void diagnosticar() {
+            int contok = 0;
+            list<Reg_Paciente*>::iterator it;
+            for (it = listap.begin(); it != listap.end(); ++it) {
+                if ((*it)->getOK()) { contok++; }
+            }
+            double percent = 100.0 * contok / listap.size();
+            saida << "Pacientes Ok: " << percent << "%\n";
+
+        }
+
         ostringstream& getSaida() { return saida; }
-        void diagnosticar() {}
-        ostringstream& operator<<(Diagnosticador diag) {
-            return getSaida();
-        };
+        friend ostream& operator<<(ostream& os, Diagnosticador& diag);
 
 };
-
+ostream& operator<<(ostream& os, Diagnosticador& diag) {
+    diag.diagnosticar();
+    os << diag.getSaida().str();
+    return os;
+}
 
 int main() {
-    srand(time(NULL));
-
+    srand(time(NULL));  
     Diagnosticador diag1(100);
-    // cout << diag1 << endl;
+    cout << diag1 << endl;
     return 0;
 }
