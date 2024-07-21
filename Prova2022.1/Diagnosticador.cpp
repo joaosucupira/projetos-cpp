@@ -129,11 +129,25 @@ class Diagnosticador {
         ostringstream saida;
     public:
         Diagnosticador(const int num = 10) {
+            Reg_Paciente* AAA = NULL;
             for (int i = 0; i < num; i++) {
-                Reg_Paciente* AAA = new Reg_Paciente();
-                AAA->auto_avaliar();
-                listap.push_back(AAA);  
+                // Reg_Paciente* AAA = new Reg_Paciente();
+                // AAA->auto_avaliar();
+                // listap.push_back(AAA);  
+                
+                // ! - O professor parece cobrar uma verificação rigorosa da alocação
+                // de memoria. Supostamente, eu deveria refazer isso sempre que iterar
+                // em qualquer das estruturas de dados.
+
+                AAA = new Reg_Paciente();
+                if (AAA) {
+                    AAA->auto_avaliar();
+                    listap.push_back(AAA);
+                } else {
+                    cout << endl << "Problema de alocacao de memoria." << endl;
+                }
             }
+            diagnosticar();
         }
         ~Diagnosticador() {
             listap.clear();
@@ -154,11 +168,13 @@ class Diagnosticador {
         }
 
         ostringstream& getSaida() { return saida; }
-        friend ostream& operator<<(ostream& os, Diagnosticador& diag);
+        // friend ostream& operator<<(ostream& os, Diagnosticador& diag);
+        // ! - Não precisei da classe friend nem da declaração, apenas chamei a diagnosticar
+        // dentro do loop da construtora, o que popula a lista da classe agregadora.
 
 };
 ostream& operator<<(ostream& os, Diagnosticador& diag) {
-    diag.diagnosticar();
+    // diag.diagnosticar();
     os << diag.getSaida().str();
     return os;
 }
