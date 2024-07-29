@@ -51,25 +51,58 @@ namespace Controlados {
             void operator++() { multas++; }
             const int getX() const { return x; }
 
+        class Pedestre : public Ente {
+            private:
+                const int x;
+                bool guarda;
+            public:
+                Pedestre(const int yy = 0) : Ente(3, yy), x(3), guarda(false) {
+                    if (1 == (rand() % 100)) { guarda = true; }
+                }
+                ~Pedestre() {}
+
+                const bool Pedestre::mover(Ente* pE) {
+                    y++;
+                    bool moveu = pE->mover(this);
+
+                    if ((x == pE->getX() && y == pE->getY()) && guarda == true) {
+                        *(pE)++; // multando o carro
+
+                        if (moveu) {
+                            if (static_cast<Carro*>(pE)->frenar()) {
+                                return false;
+                            } else {
+                                // cout << endl << "! - Acidente GRAVE." << endl;
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                const int getX() const { return x; }
+
+
+        };
+
     };
     const int Carro::MAXVEL(40);
 
-    class Pedestre : public Ente {
-        private:
-            const int x;
-            bool guarda;
-        public:
-            Pedestre(const int yy = 0) : Ente(3, yy), x(3), guarda(false) {
-                if (1 == (rand() % 100)) { guarda = true; }
-            }
-            ~Pedestre() {}
+    // class Pedestre : public Ente {
+    //     private:
+    //         const int x;
+    //         bool guarda;
+    //     public:
+    //         Pedestre(const int yy = 0) : Ente(3, yy), x(3), guarda(false) {
+    //             if (1 == (rand() % 100)) { guarda = true; }
+    //         }
+    //         ~Pedestre() {}
 
-            const bool mover(Ente* pE); // implementeado a frente por organização
+    //         const bool mover(Ente* pE); // implementeado a frente por organização
 
-            const int getX() const { return x; }
+    //         const int getX() const { return x; }
 
 
-    };
+    // };
 
     // Métodos mover:
     const bool Carro::mover(Ente* pE) {
@@ -80,23 +113,23 @@ namespace Controlados {
             return false;
         }
     }
-    const bool Pedestre::mover(Ente* pE) {
-        y++;
-        bool moveu = pE->mover(this);
+    // const bool Pedestre::mover(Ente* pE) {
+    //     y++;
+    //     bool moveu = pE->mover(this);
 
-        if ((x == pE->getX() && y == pE->getY()) && guarda == true) {
-            *(pE)++; // multando o carro
+    //     if ((x == pE->getX() && y == pE->getY()) && guarda == true) {
+    //         *(pE)++; // multando o carro
 
-            if (moveu) {
-                if (static_cast<Carro*>(pE)->frenar()) {
-                    return false;
-                } else {
-                    // cout << endl << "! - Acidente GRAVE." << endl;
-                    return true;
-                }
-            }
-        }
-    }
+    //         if (moveu) {
+    //             if (static_cast<Carro*>(pE)->frenar()) {
+    //                 return false;
+    //             } else {
+    //                 // cout << endl << "! - Acidente GRAVE." << endl;
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    // }
 
 }
 using namespace Controlados;
@@ -149,7 +182,7 @@ namespace Controle {
         public:
             Transito() : pedestres(), carros() {
                 // populando pedestres
-                // Pedestre* pP = NULL;
+                Pedestre* pP = NULL; // Agora consigo criar Pedestre sem ambiguidade !
 
             }
             ~Transito();
