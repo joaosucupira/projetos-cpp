@@ -84,6 +84,7 @@ void Endorfina::calcular_nivel() {
     } else if (real >= 0.0 && real <= 3.0 && intSero > 0) {
         nivel = "baixo";
     } 
+    cout << "Real:" << real << " " << intSero << endl;
 }
 
 void Serotonina::calcular_nivel() {
@@ -95,6 +96,7 @@ void Serotonina::calcular_nivel() {
     } else if (inteiro >= 0.0 && inteiro <= 4.0 && realEndo > 0.0) {
         nivel = "baixo";
     } 
+    cout << "Inteiro:" << inteiro << " " << realEndo << endl;
 }
 
 // Classe gerenciadora que agrega hormonios do paciente
