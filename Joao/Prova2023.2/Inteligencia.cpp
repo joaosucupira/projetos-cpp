@@ -32,7 +32,10 @@ class Agente {
             id = cont_id;
         }
 
-        virtual ~Agente() {};
+        virtual ~Agente() {
+            id = -1;
+            idade = -1;
+        };
 
         virtual void agir() = 0;
         const int getIdade() const { return idade; }
@@ -77,7 +80,7 @@ class Espiao : public Agente {
             int sorteio = rand() % 101;
             setBocoh(sorteio < 90);
         }
-        Espiao() : Agente() { 
+        Espiao() : Agente(), secrets() { 
             int sorteio = rand() % 101;
             setBocoh(sorteio < 90);
          }
@@ -86,7 +89,11 @@ class Espiao : public Agente {
         void agir();
 
         void incluirSecreto(Secreto* p) {
-            secrets.push_back(p); 
+            if (p) {
+                secrets.push_back(p);  
+            } else {
+                cout << endl << "Agente nulo nao pode ser incluido." << endl;
+            }
 
         };
         void setBocoh(const bool b) { bocoh = b; };
@@ -117,12 +124,14 @@ class Duplo : public Secreto {
 
 void Espiao::agir() {
     list<Secreto*>::iterator it;
+
     it = secrets.begin();
     while (it != secrets.end()) {
+        // FAzer ficar igual a solução
         if (*it == nullptr) {
             it = secrets.erase(it);
 
-        } else if ((*it)->getForca() > 0) {
+        } else if ((*it)->getForca() > 0.0) {
             
             --(**it);
             ++it;

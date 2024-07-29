@@ -143,9 +143,9 @@ class Eleicao{
             criarPartidos();
 
             filiarEleitores();
-            filiarCandidatos();
+            filiarCandidatos(); // Joao: Aqui acontece o seg fault
 
-            executar();
+            // executar();
         }
 
         ~Eleicao()
@@ -228,15 +228,14 @@ class Eleicao{
             /*percorre cada candidato filiando a um partido diferente, quando filia ao ultimo partido
               começa a filiar ao primeiro novamente (por causa da função de módulo partidos[i%qtdd_p],
               que permite acessar os partidos de maneira circular)*/
-            for(int i=0; i<qtdd_c; i++)
-            {
+
+
+            for(int i=0; i<qtdd_c; i++) {
                 partidos[i%qtdd_p]->filiar(candidatos[i]);
 
                 //apos a filiação, os candidatos são inseridos na lista de eleitores
-                eleitores.push_back(candidatos[i]);
+                eleitores.push_back((candidatos[i]));
             }
-
-            
 
         }
 

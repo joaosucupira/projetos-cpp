@@ -1,5 +1,5 @@
-// Prof Simão - DAINF/UTFPR - Ctba - TecProg S71 - 2 Sem 2022 - 1a Parcial
-// Hah couts suplementares para fins de entedimento da execução.
+// Prof Simï¿½o - DAINF/UTFPR - Ctba - TecProg S71 - 2 Sem 2022 - 1a Parcial
+// Hah couts suplementares para fins de entedimento da execuï¿½ï¿½o.
 
 #include <vector>
 #include <list>
@@ -12,7 +12,7 @@ using namespace std;
 
 namespace agentes
 {
-    class Agente
+    class Agente // classe abstrata pois possui ao menos uma funÃ§Ã£o virtual pura
     {
         protected:
             static int cont_id;
@@ -74,7 +74,7 @@ namespace agentes
                 secres.clear();
             }
 
-            void agir(); // a ser implementado depois da criação da classe Secreto dado a dependência.
+            void agir(); // a ser implementado depois da criaï¿½ï¿½o da classe Secreto dado a dependï¿½ncia.
 
             void incluirSecreto(Secreto* p)
             {
@@ -195,7 +195,7 @@ namespace agentes
                     if ( (*iterador)->getForca() > 0.0 )
                     {
                         (*iterador)->operator--();
-                        cout << "Diminuindo força de: " << *iterador << endl;
+                        cout << "Diminuindo forï¿½a de: " << *iterador << endl;
                     }
                     else
                     {
@@ -307,7 +307,7 @@ class Inteligencia
                 }
                 else
                 {
-                    cout << "Agente secreto não alocado!" << endl;
+                    cout << "Agente secreto nï¿½o alocado!" << endl;
                 }
             }
                 // ----------------------------------
@@ -323,7 +323,7 @@ class Inteligencia
                 }
                 else
                 {
-                    cout << "Agente espião não alocado!" << endl;
+                    cout << "Agente espiï¿½o nï¿½o alocado!" << endl;
                 }
 
                 // ----------------------------------
@@ -340,7 +340,7 @@ class Inteligencia
                 }
                 else
                 {
-                    cout << "Agente duplo não alocado!" << endl;
+                    cout << "Agente duplo nï¿½o alocado!" << endl;
                 }
             }
 
@@ -356,7 +356,7 @@ class Inteligencia
 
         void executar()
         {
-            //cout << "Método executar de Inteligência!" << endl << endl;
+            //cout << "Mï¿½todo executar de Inteligï¿½ncia!" << endl << endl;
             set<Agente*>::iterator it;
 
             for (int i = 0; i < 10; i++)
@@ -385,7 +385,7 @@ int main ()
     //cout << "Funcao main!" << endl;
 
     time_t t;   // https://pt.wikipedia.org/wiki/Time_t
-                // Para função srand e rand vide: https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
+                // Para funï¿½ï¿½o srand e rand vide: https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
     srand((unsigned) time(&t));
 
     Inteligencia intel;
