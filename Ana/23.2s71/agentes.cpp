@@ -262,11 +262,18 @@ class Inteligencia
         void executar()
         {
             set<Agente*>::iterator it;
+            Agente* ag;
+
             for(it=colecao.begin(); it!=colecao.end(); it++)
             {
-                cout << "Agente " << (*it)->getId() << " idade: " << (*it)->getIdade() << endl;
-                (*it)->agir();
-                (*(*it))++;
+                if(*it)
+                {
+                    ag = *it;
+
+                    cout << "Agente " << ag->getId() << " idade: " << ag->getIdade() << endl;
+                    ag->agir();
+                    ag->operator++(0);
+                }
             }
         }
 

@@ -1,6 +1,6 @@
-// Prof Simão - DAINF/UTFPR - Ctba - TecProg S73
+// Prof Simï¿½o - DAINF/UTFPR - Ctba - TecProg S73
 // - 1 Sem 2023 - 1a Parcial
-// Hah couts suplementares para fins de entedimento da execução.
+// Hah couts suplementares para fins de entedimento da execuï¿½ï¿½o.
 
 #include <stdlib.h>
 #include <time.h>
@@ -56,7 +56,7 @@ namespace Controlados
         private:
             const int y;
             static const int MAXVEL;
-            int  velocidade;    // como o enunciado pedia para alterar a velocidade, ela não poderia ser constante...
+            int  velocidade;    // como o enunciado pedia para alterar a velocidade, ela nï¿½o poderia ser constante...
             int multas;
 
         public:
@@ -87,7 +87,7 @@ namespace Controlados
                         (getY() == pE->getY()) )
                 {
 
-                    cout << "O carro " << this << " e o pedestre " << pE << " estao na mesma posição!" << endl;
+                    cout << "O carro " << this << " e o pedestre " << pE << " estao na mesma posiï¿½ï¿½o!" << endl;
 
                     if (velocidade > MAXVEL)
                     {
@@ -304,7 +304,7 @@ namespace Controle
                     }
                     else
                     {
-                        cout << " Pedestre não instaciando - ponteiro nulo! " << endl;
+                        cout << " Pedestre nï¿½o instaciando - ponteiro nulo! " << endl;
                     }
                 }
 
@@ -323,7 +323,7 @@ namespace Controle
                     }
                     else
                     {
-                        cout << " Pedestre não instaciando - ponteiro nulo! " << endl;
+                        cout << " Pedestre nï¿½o instaciando - ponteiro nulo! " << endl;
                     }
                 }
 
@@ -360,7 +360,7 @@ namespace Controle
 
                             bool rP = pP->mover((Ente*)pC);
 
-                            //cout << "Movendo o ente " << pE << " que é o pedestre " << pP << " em função do carro " << pC << endl;
+                            //cout << "Movendo o ente " << pE << " que ï¿½ o pedestre " << pP << " em funï¿½ï¿½o do carro " << pC << endl;
 
                             if (rP == true)
                             {
@@ -400,7 +400,7 @@ int main ()
 
    time_t tempo;
    // https://pt.wikipedia.org/wiki/Time_t
-   // Para função srand e rand vide:
+   // Para funï¿½ï¿½o srand e rand vide:
    // https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
    srand((unsigned) time(&tempo));
 
