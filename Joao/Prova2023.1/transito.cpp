@@ -4,7 +4,7 @@
 #include <stdlib.h>
 using namespace std;
 
-class Carro;
+// class Carro;
 // class Pedestre;
 
 namespace Controlados {
@@ -183,10 +183,45 @@ namespace Controle {
             Transito() : pedestres(), carros() {
                 // populando pedestres
                 Pedestre* pP = NULL; // Agora consigo criar Pedestre sem ambiguidade !
+                
+                for (int i = 0; i < 50; i++) {
+                    int y = (int)(rand() % 10);
+                    pP = new Pedestre(y);
+                    if (pP) {
+                        pedestres.incluir(pP);
+                    } else {
+                        cout << endl << "! - Ponteiro nulo recusado." << endl;
+                    }
+                }
+
+                Carro* pC = NULL;
+
+                for (int i = 0; i < 10; i++) {
+                    int x = (int)(rand() % 10);
+                    pC = new Carro(x);
+                    if (pC) {
+                        carros.incluir(pC);
+                    } else {
+                        cout << endl << "! - Ponteiro nulo recusado." << endl;
+                    }
+                }
 
             }
-            ~Transito();
-            void transitar();
+            ~Transito() {}
+            void transitar() {
+                for (int i = 0; i < 10; i++) {
+                    pedestres.irParaInicio();
+                    while (pedestres.fim() == false) {
+                        carros.irParaInicio();
+                        while (carros.fim() == false) {
+                            pedestres.getAtual()->mover(carros.getAtual());
+                            carros.operator++();
+                        }
+                        
+                        pedestres.operator++();
+                    }
+                }
+            }
 
     };
 }
