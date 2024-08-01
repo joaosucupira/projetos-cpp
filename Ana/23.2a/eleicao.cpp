@@ -157,12 +157,12 @@ class Eleicao{
 
             eleitores.clear();
 
-            tam = (int)candidatos.size();
+            /*tam = (int)candidatos.size();
 
             for(int i=0; i<tam; i++)
                 delete(candidatos[i]);
 
-            candidatos.clear();
+            candidatos.clear();*/
 
             tam = (int)partidos.size();
 
@@ -230,7 +230,8 @@ class Eleicao{
               que permite acessar os partidos de maneira circular)*/
 
 
-            for(int i=0; i<qtdd_c; i++) {
+            for(int i=0; i<qtdd_c; i++) 
+            {
                 partidos[i%qtdd_p]->filiar(candidatos[i]);
 
                 //apos a filiação, os candidatos são inseridos na lista de eleitores
